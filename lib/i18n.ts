@@ -1,0 +1,20 @@
+// UI 문자열 (한국어 우선)
+export const t = {
+  appTitle: '아기 낱말카드',
+  home: '홈',
+  settings: '설정',
+  selectCategory: '카테고리를 골라주세요',
+  autoplay: '자동 재생',
+  autoplayOn: '자동재생 켜짐',
+  autoplayOff: '자동재생 꺼짐',
+  back: '뒤로',
+  parentGate: '부모 확인',
+  parentGateInstruction: '화면을 2초 동안 길게 눌러주세요',
+  parentGateSuccess: '확인됨',
+  tapToHear: '카드를 탭하면 발음이 나와요',
+  swipeHint: '좌우로 쓸어서 카드를 넘기세요',
+  autoplayInterval: '자동재생 간격',
+  seconds: '초',
+  about: '이 앱은 9개월 이상 아기를 위한 이중 언어(한/영) 낱말 학습 앱입니다.',
+  privacyNote: '이 앱은 어떠한 개인정보도 수집하지 않습니다.',
+};
