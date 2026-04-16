@@ -3,11 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
+  TouchableOpacity,
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { CATEGORIES } from '../data/cards';
 import { ParentGate } from '../components/ParentGate';
 import { t } from '../lib/i18n';
@@ -23,24 +23,27 @@ export default function Home() {
 
         <View style={styles.grid}>
           {CATEGORIES.map((cat) => (
-            <Pressable
+            <Link
               key={cat.id}
-              style={styles.tile}
-              onPress={() => router.push(`/cards/${cat.id}`)}
+              href={`/cards/${cat.id}` as any}
+              asChild
             >
-              <Text style={styles.tileEmoji}>{cat.emoji}</Text>
-              <Text style={styles.tileLabel}>{cat.ko}</Text>
-              <Text style={styles.tileSubLabel}>{cat.en}</Text>
-            </Pressable>
+              <TouchableOpacity style={styles.tile} activeOpacity={0.7}>
+                <Text style={styles.tileEmoji}>{cat.emoji}</Text>
+                <Text style={styles.tileLabel}>{cat.ko}</Text>
+                <Text style={styles.tileSubLabel}>{cat.en}</Text>
+              </TouchableOpacity>
+            </Link>
           ))}
         </View>
 
-        <Pressable
+        <TouchableOpacity
           style={styles.settingsBtn}
+          activeOpacity={0.7}
           onPress={() => setGateVisible(true)}
         >
           <Text style={styles.settingsText}>⚙︎ {t.settings}</Text>
-        </Pressable>
+        </TouchableOpacity>
 
         <Text style={styles.hint}>{t.tapToHear}</Text>
       </ScrollView>

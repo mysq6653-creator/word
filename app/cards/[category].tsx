@@ -3,7 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
+  TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
@@ -116,14 +116,15 @@ export default function CardsScreen() {
         <Text style={styles.counter}>
           {index + 1} / {cards.length}
         </Text>
-        <Pressable
+        <TouchableOpacity
+          activeOpacity={0.7}
           style={[styles.autoBtn, autoplay && styles.autoBtnOn]}
           onPress={() => setAutoplay((v) => !v)}
         >
           <Text style={[styles.autoText, autoplay && styles.autoTextOn]}>
             {autoplay ? '⏸ ' + t.autoplayOn : '▶ ' + t.autoplayOff}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

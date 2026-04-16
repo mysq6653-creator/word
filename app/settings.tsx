@@ -3,7 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
+  TouchableOpacity,
   SafeAreaView,
   ScrollView,
 } from 'react-native';
@@ -24,8 +24,9 @@ export default function Settings() {
         <Text style={styles.section}>{t.autoplayInterval}</Text>
         <View style={styles.row}>
           {INTERVAL_OPTIONS.map((opt) => (
-            <Pressable
+            <TouchableOpacity
               key={opt}
+              activeOpacity={0.7}
               style={[
                 styles.chip,
                 autoplayIntervalMs === opt && styles.chipOn,
@@ -41,13 +42,14 @@ export default function Settings() {
                 {opt / 1000}
                 {t.seconds}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           ))}
         </View>
 
         <Text style={styles.section}>먼저 들려줄 언어</Text>
         <View style={styles.row}>
-          <Pressable
+          <TouchableOpacity
+            activeOpacity={0.7}
             style={[styles.chip, primaryLang === 'ko' && styles.chipOn]}
             onPress={() => setPrimaryLang('ko')}
           >
@@ -59,8 +61,9 @@ export default function Settings() {
             >
               한국어
             </Text>
-          </Pressable>
-          <Pressable
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.7}
             style={[styles.chip, primaryLang === 'en' && styles.chipOn]}
             onPress={() => setPrimaryLang('en')}
           >
@@ -72,7 +75,7 @@ export default function Settings() {
             >
               English
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.about}>
