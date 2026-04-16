@@ -7,6 +7,9 @@ yarn-debug.*
 yarn-error.*
 *.log
 
+# Vercel
+.vercel/
+
 # macOS
 .DS_Store
 
