@@ -6,21 +6,20 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { useLocalSearchParams, Stack } from 'expo-router';
 import {
   CATEGORIES,
   Card,
   Category,
   getCardsByCategory,
 } from '../../data/cards';
-import { SwipeDeck } from '../../components/SwipeDeck';
+import { CardView } from '../../components/CardView';
 import { playWord, playWordAndWait, stopAudio } from '../../lib/audio';
 import { useSettings } from '../../stores/settings';
 import { t } from '../../lib/i18n';
 
 export default function CardsScreen() {
   const { category } = useLocalSearchParams<{ category: string }>();
-  const router = useRouter();
   const cards = useMemo(
     () => getCardsByCategory(category as Category),
     [category]
@@ -33,9 +32,20 @@ export default function CardsScreen() {
   const primaryLang = useSettings((s) => s.primaryLang);
   const secondaryLang: 'ko' | 'en' = primaryLang === 'ko' ? 'en' : 'ko';
 
+  const prev = () => {
+    if (autoplay) return;
+    setIndex((i) => (i - 1 + cards.length) % cards.length);
+  };
+  const next = () => {
+    if (autoplay) return;
+    setIndex((i) => (i + 1) % cards.length);
+  };
+
   // 카드 탭 → 기본 언어 재생
-  const onTap = async (card: Card) => {
-    if (autoplay) return; // 자동재생 중에는 탭 무시
+  const onTapCard = async () => {
+    if (autoplay) return;
+    const card = cards[index];
+    if (!card) return;
     await playWord(
       card.id,
       primaryLang === 'ko' ? card.ko : card.en,
@@ -43,8 +53,7 @@ export default function CardsScreen() {
     );
   };
 
-  // 자동재생 루프: 각 effect 호출은 현재 카드 한 장만 처리하고,
-  // setIndex 로 index 가 바뀌면 effect 가 재호출되어 다음 카드를 진행한다.
+  // 자동재생 루프
   useEffect(() => {
     if (!autoplay) {
       stopAudio();
@@ -94,28 +103,43 @@ export default function CardsScreen() {
   if (!cards.length) {
     return (
       <SafeAreaView style={styles.safe}>
+        <Stack.Screen options={{ title: catMeta?.ko ?? '카드' }} />
         <Text style={styles.empty}>카드가 없습니다</Text>
       </SafeAreaView>
     );
   }
+
+  const current = cards[index];
 
   return (
     <SafeAreaView style={styles.safe}>
       <Stack.Screen options={{ title: catMeta?.ko ?? '카드' }} />
 
       <View style={styles.deckArea}>
-        <SwipeDeck
-          cards={cards}
-          index={index}
-          onIndexChange={setIndex}
-          onTap={onTap}
-        />
+        <CardView card={current} onTap={onTapCard} />
       </View>
 
-      <View style={styles.footer}>
+      <View style={styles.navRow}>
+        <TouchableOpacity
+          activeOpacity={0.6}
+          style={styles.navBtn}
+          onPress={prev}
+        >
+          <Text style={styles.navArrow}>◀</Text>
+        </TouchableOpacity>
         <Text style={styles.counter}>
           {index + 1} / {cards.length}
         </Text>
+        <TouchableOpacity
+          activeOpacity={0.6}
+          style={styles.navBtn}
+          onPress={next}
+        >
+          <Text style={styles.navArrow}>▶</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.footer}>
         <TouchableOpacity
           activeOpacity={0.7}
           style={[styles.autoBtn, autoplay && styles.autoBtnOn]}
@@ -136,22 +160,40 @@ function sleep(ms: number) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#FFF8E7' },
-  deckArea: { flex: 1 },
-  footer: {
+  deckArea: { flex: 1, padding: 16 },
+  navRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
-    paddingVertical: 16,
+    paddingVertical: 8,
+  },
+  navBtn: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navArrow: {
+    fontSize: 28,
+    color: '#2B2B2B',
+    fontWeight: '700',
   },
   counter: {
     fontSize: 18,
     color: '#6B6B6B',
     fontWeight: '600',
   },
+  footer: {
+    paddingHorizontal: 24,
+    paddingBottom: 16,
+    alignItems: 'center',
+  },
   autoBtn: {
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     borderRadius: 24,
     backgroundColor: '#FFFFFF',
   },

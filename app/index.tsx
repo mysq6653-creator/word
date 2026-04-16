@@ -27,7 +27,7 @@ export default function Home() {
               key={cat.id}
               style={styles.tile}
               activeOpacity={0.7}
-              onPress={() => router.push(`/cards/${cat.id}` as any)}
+              onPress={() => router.push(`/cards/${cat.id}`)}
             >
               <Text style={styles.tileEmoji}>{cat.emoji}</Text>
               <Text style={styles.tileLabel}>{cat.ko}</Text>
@@ -85,10 +85,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    // @ts-ignore react-native-web
+    boxShadow: '0px 4px 8px rgba(0,0,0,0.08)',
     elevation: 3,
   },
   tileEmoji: {

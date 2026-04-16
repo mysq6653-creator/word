@@ -6,7 +6,7 @@
 ## 기능 (MVP)
 
 1. 카드 탭 → 발음 오디오 재생 (expo-speech TTS)
-2. 좌/우 스와이프로 카드 전환 (reanimated 4.x)
+2. 이전 / 다음 버튼으로 카드 전환
 3. 카테고리 선택: 동물 / 과일 / 탈것 / 색깔 / 가족 / 음식
 4. 자동 재생 모드 (한국어 → 영어 → 다음 카드, 간격 조절 가능)
 5. 부모 잠금 (설정 접근 시 2초 길게 누르기)
@@ -18,7 +18,7 @@
 - **expo-router 6** — 파일 기반 라우팅 (static web output)
 - **zustand + AsyncStorage** — 설정 저장
 - **expo-speech** — 한/영 TTS (번들 MP3 가 준비되면 폴백 교체 가능)
-- **react-native-gesture-handler 2.28 + reanimated 4.1** — 부드러운 스와이프
+- **react-native-safe-area-context** — 안전 영역 처리
 
 ## 개발
 

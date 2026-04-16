@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import { Card, getImage } from '../data/cards';
 
 type Props = {
@@ -10,7 +16,11 @@ type Props = {
 export function CardView({ card, onTap }: Props) {
   const image = getImage(card.id);
   return (
-    <Pressable style={styles.card} onPress={onTap}>
+    <TouchableOpacity
+      activeOpacity={0.9}
+      style={styles.card}
+      onPress={onTap}
+    >
       <View style={styles.imageBox}>
         {image ? (
           <Image source={image} style={styles.image} resizeMode="contain" />
@@ -24,7 +34,7 @@ export function CardView({ card, onTap }: Props) {
       <Text style={styles.english} numberOfLines={1} adjustsFontSizeToFit>
         {card.en}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
@@ -38,10 +48,8 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
+    // @ts-ignore react-native-web uses boxShadow
+    boxShadow: '0px 6px 16px rgba(0,0,0,0.12)',
     elevation: 8,
   },
   imageBox: {
