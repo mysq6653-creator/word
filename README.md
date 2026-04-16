@@ -5,8 +5,8 @@
 
 ## 기능 (MVP)
 
-1. 카드 탭 → 발음 오디오 재생 (번들 MP3, 없으면 TTS 폴백)
-2. 좌/우 스와이프로 카드 전환 (reanimated)
+1. 카드 탭 → 발음 오디오 재생 (expo-speech TTS)
+2. 좌/우 스와이프로 카드 전환 (reanimated 4.x)
 3. 카테고리 선택: 동물 / 과일 / 탈것 / 색깔 / 가족 / 음식
 4. 자동 재생 모드 (한국어 → 영어 → 다음 카드, 간격 조절 가능)
 5. 부모 잠금 (설정 접근 시 2초 길게 누르기)
@@ -14,11 +14,11 @@
 
 ## 스택
 
-- **React Native + Expo** (managed workflow, TypeScript)
-- **expo-router** — 파일 기반 라우팅
+- **React Native + Expo SDK 54** (managed workflow, TypeScript)
+- **expo-router 6** — 파일 기반 라우팅 (static web output)
 - **zustand + AsyncStorage** — 설정 저장
-- **expo-av + expo-speech** — 오디오 재생 / TTS 폴백
-- **react-native-gesture-handler + reanimated** — 부드러운 스와이프
+- **expo-speech** — 한/영 TTS (번들 MP3 가 준비되면 폴백 교체 가능)
+- **react-native-gesture-handler 2.28 + reanimated 4.1** — 부드러운 스와이프
 
 ## 개발
 
@@ -29,12 +29,11 @@ npm install
 # 웹 미리보기 (가장 빠른 반복)
 npx expo start --web
 
-# 아이폰 Expo Go (QR 스캔)
+# 아이폰/안드로이드 Expo Go (QR 스캔)
 npx expo start
-
-# Android APK 빌드 (EAS)
-npx eas build -p android --profile preview
 ```
+
+Expo Go 앱은 SDK 54 버전이어야 합니다. 앱스토어/플레이스토어에서 최신 버전 설치.
 
 ## 폴더 구조
 
@@ -51,40 +50,83 @@ components/
 data/
   cards.ts                 # 타입 정의 + 카드 데이터 + require() 매핑
 lib/
-  audio.ts                 # expo-av / expo-speech 재생 헬퍼
+  audio.ts                 # expo-speech 재생 + 타임아웃 폴백
   i18n.ts                  # UI 문자열
 stores/
   settings.ts              # Zustand + AsyncStorage
-assets/
-  images/<category>/<id>.png  # 미래 — OpenMoji 512px PNG
-  audio/ko/<id>.mp3           # 미래 — 한국어 녹음
-  audio/en/<id>.mp3           # 미래 — 영어 녹음
+assets/                    # 1x1 PNG placeholder (배포 전 교체 필수)
+  icon.png                 # 앱 아이콘 (1024x1024 필요)
+  adaptive-icon.png        # Android adaptive icon (1024x1024)
+  splash.png               # 스플래시 스크린 (1242x2436 권장)
+  favicon.png              # 웹 파비콘 (48x48 이상)
 ```
 
 ## 에셋 교체 가이드
 
-MVP 는 이모지 placeholder + expo-speech TTS 로 동작한다. 실제 에셋을 추가하려면:
+### 앱 아이콘 / 스플래시 (배포 전 필수)
 
-### 이미지 (OpenMoji 512px PNG)
+현재 `assets/` 는 1x1 투명 PNG placeholder 입니다. Play Store 제출 전 교체:
 
-1. <https://openmoji.org> 에서 카테고리별로 다운로드 (CC BY-SA 4.0)
+- `assets/icon.png` — 1024x1024 PNG, 투명 배경 없음
+- `assets/adaptive-icon.png` — 1024x1024, 안쪽 여백 고려 (bg 색 `#FFF8E7`)
+- `assets/splash.png` — 1242x2436 권장, 배경 `#FFF8E7`
+- `assets/favicon.png` — 48x48 이상
+
+[Expo Icon Generator](https://buildicon.expo.dev) 또는 Figma 로 생성.
+
+### 카드 이미지 (이모지 → PNG 교체)
+
+MVP 는 이모지 placeholder 로 동작. 실제 OpenMoji 이미지로 교체:
+
+1. <https://openmoji.org> 에서 카테고리별 다운로드 (CC BY-SA 4.0)
 2. `assets/images/<category>/<id>.png` 에 배치
 3. `data/cards.ts` 의 `getImage(id)` switch 에 `case` 추가:
    ```ts
    case 'dog': return require('../assets/images/animals/dog.png');
    ```
 
-### 오디오 (직접 녹음 MP3)
+### 카드 오디오 (TTS → 녹음 MP3)
 
-1. 아이폰 Voice Memos → m4a 녹음 → Audacity 로 MP3 변환
-2. `assets/audio/ko/<id>.mp3`, `assets/audio/en/<id>.mp3` 에 배치
+TTS 품질이 만족스럽지 않다면 직접 녹음으로 교체:
+
+1. Voice Memo 로 한/영 녹음 → Audacity 로 MP3 변환
+2. `assets/audio/ko/<id>.mp3`, `assets/audio/en/<id>.mp3` 배치
 3. `data/cards.ts` 의 `getAudio(id, lang)` switch 에 `case` 추가
+4. `lib/audio.ts` 에서 `getAudio` 가 있으면 expo-audio 로 재생하도록 확장
 
 ## 배포
 
-- **Play Store**: $25 1회 등록 → `eas build -p android --profile production` → AAB 업로드 → "Designed for Families" 등급
-- **App Store (나중)**: Apple Developer $99/년 등록 후 `eas build -p ios`
+### Vercel (웹)
+
+`vercel.json` 이 준비되어 있음. Vercel 대시보드에서 GitHub 저장소 연결만 하면 자동 빌드:
+
+- Build Command: `npx expo export --platform web`
+- Output Directory: `dist`
+- Framework: None
+- cleanUrls 로 `/settings`, `/cards/animals` 같은 clean URL 처리
+
+### Play Store (Android)
+
+```bash
+# 1. EAS CLI 설치
+npm i -g eas-cli
+
+# 2. Expo 계정 로그인
+eas login
+
+# 3. 프로젝트 설정
+eas build:configure
+
+# 4. 먼저 내부 테스트 APK 빌드
+eas build -p android --profile preview
+
+# 5. 프로덕션 AAB 빌드 (Play Console 업로드용)
+eas build -p android --profile production
+```
+
+Play Console: $25 1회 등록 → "Designed for Families" 카테고리.
+App Store 는 Apple Developer $99/년 등록 후 `eas build -p ios`.
 
 ## 라이선스
 
-MIT. 오디오 녹음은 사용자 본인이 직접 추가하는 것을 권장.
+MIT. 카드 이미지/오디오는 각 소스의 라이선스를 따르세요.
