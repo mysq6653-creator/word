@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, useWindowDimensions, Platform, Pressable } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -25,6 +25,7 @@ const SWIPE_THRESHOLD = 80;
 export function SwipeDeck({ cards, index, onIndexChange, onTap }: Props) {
   const { width } = useWindowDimensions();
   const translateX = useSharedValue(0);
+  const isWeb = Platform.OS === 'web';
 
   const go = useCallback(
     (delta: number) => {
@@ -77,6 +78,17 @@ export function SwipeDeck({ cards, index, onIndexChange, onTap }: Props) {
 
   const card = cards[index];
   if (!card) return null;
+
+  // 웹 환경에서는 GestureDetector 없이 CardView의 onTap만 사용
+  if (isWeb) {
+    return (
+      <View style={styles.container}>
+        <Animated.View style={[styles.cardWrap, animatedStyle]}>
+          <CardView card={card} onTap={() => onTap(card)} />
+        </Animated.View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
