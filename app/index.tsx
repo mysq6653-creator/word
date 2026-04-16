@@ -7,7 +7,7 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { CATEGORIES } from '../data/cards';
 import { ParentGate } from '../components/ParentGate';
 import { t } from '../lib/i18n';
@@ -23,17 +23,16 @@ export default function Home() {
 
         <View style={styles.grid}>
           {CATEGORIES.map((cat) => (
-            <Link
+            <TouchableOpacity
               key={cat.id}
-              href={`/cards/${cat.id}` as any}
-              asChild
+              style={styles.tile}
+              activeOpacity={0.7}
+              onPress={() => router.push(`/cards/${cat.id}` as any)}
             >
-              <TouchableOpacity style={styles.tile} activeOpacity={0.7}>
-                <Text style={styles.tileEmoji}>{cat.emoji}</Text>
-                <Text style={styles.tileLabel}>{cat.ko}</Text>
-                <Text style={styles.tileSubLabel}>{cat.en}</Text>
-              </TouchableOpacity>
-            </Link>
+              <Text style={styles.tileEmoji}>{cat.emoji}</Text>
+              <Text style={styles.tileLabel}>{cat.ko}</Text>
+              <Text style={styles.tileSubLabel}>{cat.en}</Text>
+            </TouchableOpacity>
           ))}
         </View>
 
