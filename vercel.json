@@ -2,9 +2,7 @@
   "buildCommand": "npx expo export --platform web",
   "outputDirectory": "dist",
   "framework": null,
-  "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
-    { "source": "/cards/:slug", "destination": "/cards/[category].html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
